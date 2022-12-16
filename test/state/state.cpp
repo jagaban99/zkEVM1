@@ -4,6 +4,7 @@
 
 #include "state.hpp"
 #include "host.hpp"
+#include <evmone/eips.hpp>
 #include <evmone/evmone.h>
 #include <evmone/execution_state.hpp>
 
