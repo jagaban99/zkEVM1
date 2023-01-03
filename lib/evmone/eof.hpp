@@ -83,6 +83,7 @@ enum class EOFValidationError
     inputs_outputs_num_above_limit,
     unreachable_instructions,
     stack_underflow,
+    invalid_code_section_index,
 
     impossible,
 };
