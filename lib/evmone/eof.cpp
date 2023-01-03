@@ -74,6 +74,8 @@ std::pair<EOFSectionHeaders, EOFValidationError> validate_eof_headers(bytes_view
                     return {{}, EOFValidationError::type_section_missing};
                 if (section_headers[CODE_SECTION].empty())
                     return {{}, EOFValidationError::code_section_missing};
+                if (section_headers[DATA_SECTION].empty())
+                    return {{}, EOFValidationError::data_section_missing};
                 state = State::terminated;
                 break;
             case TYPE_SECTION:
@@ -621,6 +623,8 @@ std::string_view get_error_message(EOFValidationError err) noexcept
         return "code_section_missing";
     case EOFValidationError::type_section_missing:
         return "type_section_missing";
+    case EOFValidationError::data_section_missing:
+        return "data_section_missing";
     case EOFValidationError::multiple_data_sections:
         return "multiple_data_sections";
     case EOFValidationError::unknown_section_id:
