@@ -7,13 +7,49 @@
 #include <iostream>
 #include <string>
 
+namespace
+{
+inline constexpr bool isalnum(char ch) noexcept
+{
+    return (ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+}
+
+template <typename BaseIterator>
+struct skip_nonalnum_iterator : evmc::filter_iterator<BaseIterator, isalnum>
+{
+    using evmc::filter_iterator<BaseIterator, isalnum>::filter_iterator;
+};
+
+template <typename BaseIterator>
+skip_nonalnum_iterator(BaseIterator, BaseIterator) -> skip_nonalnum_iterator<BaseIterator>;
+
+template <typename InputIterator>
+std::optional<evmc::bytes> from_hex2(InputIterator begin, InputIterator end) noexcept
+{
+    evmc::bytes bs;
+    if (!from_hex(skip_nonalnum_iterator{begin, end}, skip_nonalnum_iterator{end, end},
+            std::back_inserter(bs)))
+        return {};
+    return bs;
+}
+
+[[maybe_unused]] auto from_hex2(std::string_view s) noexcept
+{
+    return from_hex2(s.begin(), s.end());
+}
+
+}  // namespace
+
 int main()
 {
     try
     {
         for (std::string line; std::getline(std::cin, line);)
         {
-            auto o = evmc::from_hex(line);
+            if (line.empty() || line.starts_with('#'))
+                continue;
+
+            auto o = from_hex2(line);
             if (!o)
             {
                 std::cout << "err: invalid hex" << std::endl;
