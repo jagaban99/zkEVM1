@@ -5,6 +5,7 @@
 #include "state.hpp"
 #include "host.hpp"
 #include <evmone/eips.hpp>
+#include <evmone/eof.hpp>
 #include <evmone/evmone.h>
 #include <evmone/execution_state.hpp>
 
@@ -80,6 +81,10 @@ int64_t validate_transaction(const Account& sender_acc, const BlockInfo& block,
 
     if (rev >= EVMC_SHANGHAI && !tx.to.has_value() && tx.data.size() > max_initcode_size)
         return -1;  // initcode size is limited by EIP-3860.
+
+    if (rev >= EVMC_SHANGHAI && !tx.to.has_value() && is_eof_code(tx.data))
+        if (validate_eof(rev, tx.data) != evmone::EOFValidationError::success)
+            return -1;
 
     // Compute and check if sender has enough balance for the theoretical maximum transaction cost.
     // Note this is different from tx_max_cost computed with effective gas price later.
