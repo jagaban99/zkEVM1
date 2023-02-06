@@ -12,6 +12,7 @@
 
 namespace evmone
 {
+using bytes = std::basic_string<uint8_t>;
 using bytes_view = std::basic_string_view<uint8_t>;
 
 struct EOF1TypeHeader
@@ -32,12 +33,20 @@ struct EOF1Header
     /// Offset of every code section start;
     std::vector<uint16_t> code_offsets;
     uint16_t data_size = 0;
+    /// Size of every container section.
+    std::vector<uint16_t> container_sizes;
+    /// Offset of every container section start;
+    std::vector<uint16_t> container_offsets;
 
     std::vector<EOF1TypeHeader> types;
 
     /// Returns offset of code section start.
     [[nodiscard]] EVMC_EXPORT size_t code_begin(size_t index) const noexcept;
     [[nodiscard]] EVMC_EXPORT size_t code_end(size_t index) const noexcept;
+    /// Returns offset of container section start.
+    [[nodiscard]] EVMC_EXPORT size_t container_begin(size_t index) const noexcept;
+    /// Returns offset of container section end.
+    [[nodiscard]] EVMC_EXPORT size_t container_end(size_t index) const noexcept;
 };
 
 /// Checks if code starts with EOF FORMAT + MAGIC, doesn't validate the format.
@@ -46,6 +55,8 @@ struct EOF1Header
 /// Reads the section sizes assuming that container has valid format.
 /// (must be true for all EOF contracts on-chain)
 [[nodiscard]] EVMC_EXPORT EOF1Header read_valid_eof1_header(bytes_view container);
+
+void append_data_section(bytes& contaniner, bytes_view aux_data);
 
 enum class EOFValidationError
 {
@@ -86,6 +97,9 @@ enum class EOFValidationError
     unreachable_instructions,
     stack_underflow,
     invalid_code_section_index,
+    multiple_container_sections_headers,
+    container_section_before_type_section,
+    container_section_before_code_section,
 
     impossible,
 };

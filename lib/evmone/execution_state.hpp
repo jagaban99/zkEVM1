@@ -142,6 +142,8 @@ public:
     size_t output_offset = 0;
     size_t output_size = 0;
 
+    std::optional<bytes> deploy_container;
+
 private:
     evmc_tx_context m_tx = {};
 

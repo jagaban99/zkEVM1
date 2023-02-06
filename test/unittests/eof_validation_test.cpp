@@ -163,13 +163,13 @@ TEST(eof_validation, EOF1_multiple_data_sections)
 
 TEST(eof_validation, EOF1_unknown_section)
 {
-    EXPECT_EQ(validate_eof("EF0001 040001 00 FE"), EOFValidationError::unknown_section_id);
+    EXPECT_EQ(validate_eof("EF0001 050001 00 FE"), EOFValidationError::unknown_section_id);
     EXPECT_EQ(validate_eof("EF0001 FF0001 00 FE"), EOFValidationError::unknown_section_id);
-    EXPECT_EQ(validate_eof("EF0001 010004 0200010001 040001 00 00000000 FE 00"),
+    EXPECT_EQ(validate_eof("EF0001 010004 0200010001 050001 00 00000000 FE 00"),
         EOFValidationError::unknown_section_id);
     EXPECT_EQ(validate_eof("EF0001 010004 0200010001 FF0001 00 00000000 FE 00"),
         EOFValidationError::unknown_section_id);
-    EXPECT_EQ(validate_eof("EF0001 010004 0200010001 030001 040001 00 00000000 FE AA 00"),
+    EXPECT_EQ(validate_eof("EF0001 010004 0200010001 030001 050001 00 00000000 FE AA 00"),
         EOFValidationError::unknown_section_id);
     EXPECT_EQ(validate_eof("EF0001 010004 0200010001 030001 FF0001 00 00000000 FE AA 00"),
         EOFValidationError::unknown_section_id);

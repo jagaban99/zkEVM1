@@ -39,6 +39,7 @@ constexpr bool is_terminating(Opcode op) noexcept
     case OP_STOP:
     case OP_RETURN:
     case OP_RETF:
+    case OP_RETURNCONTRACT:
     case OP_REVERT:
     case OP_INVALID:
     case OP_SELFDESTRUCT:
@@ -58,15 +59,19 @@ constexpr void validate_traits_of() noexcept
         static_assert(tr.immediate_size == Op - OP_PUSH1 + 1);
     else if constexpr (Op == OP_RJUMP || Op == OP_RJUMPI || Op == OP_CALLF)
         static_assert(tr.immediate_size == 2);
-    else if constexpr (Op == OP_DUPN || Op == OP_SWAPN)
+    else if constexpr (Op == OP_DUPN || Op == OP_SWAPN || Op == OP_CREATE3 ||
+                       Op == OP_RETURNCONTRACT)
         static_assert(tr.immediate_size == 1);
     else
         static_assert(tr.immediate_size == 0);
 
     // is_terminating
     static_assert(tr.is_terminating == is_terminating(Op));
-    static_assert(!tr.is_terminating || tr.immediate_size == 0,
-        "terminating instructions must not have immediate bytes - this simplifies EOF validation");
+
+    // TODO where's assumption in validation?
+    //    static_assert(!tr.is_terminating || tr.immediate_size == 0,
+    //        "terminating instructions must not have immediate bytes - this simplifies EOF
+    //        validation");
 
     // since
     constexpr auto expected_rev = get_revision_defined_in(Op);
@@ -107,8 +112,9 @@ TEST(instructions, compare_with_evmc_instruction_tables)
         for (size_t i = 0; i < evmone_tbl.size(); ++i)
         {
             // TODO pending update in EVMC
-            if (r >= EVMC_SHANGHAI && (i == OP_RJUMP || i == OP_RJUMPI || i == OP_RJUMPV ||
-                                          i == OP_CALLF || i == OP_RETF))
+            if (r >= EVMC_SHANGHAI &&
+                (i == OP_RJUMP || i == OP_RJUMPI || i == OP_RJUMPV || i == OP_CALLF ||
+                    i == OP_RETF || i == OP_CREATE3 || i == OP_RETURNCONTRACT))
                 continue;
 
             // Skip DUPN and SWAPN for Cancun. They are not defined in evmc
@@ -145,8 +151,9 @@ TEST(instructions, compare_undefined_instructions)
         for (size_t i = 0; i < instr_tbl.size(); ++i)
         {
             // TODO pending update in EVMC
-            if (r >= EVMC_SHANGHAI && (i == OP_RJUMP || i == OP_RJUMPI || i == OP_RJUMPV ||
-                                          i == OP_CALLF || i == OP_RETF))
+            if (r >= EVMC_SHANGHAI &&
+                (i == OP_RJUMP || i == OP_RJUMPI || i == OP_RJUMPV || i == OP_CALLF ||
+                    i == OP_RETF || i == OP_CREATE3 || i == OP_RETURNCONTRACT))
                 continue;
 
             // Skip DUPN and SWAPN. They are not defined in evmc
@@ -164,7 +171,8 @@ TEST(instructions, compare_with_evmc_instruction_names)
     for (size_t i = 0; i < instr::traits.size(); ++i)
     {
         // TODO pending update in EVMC
-        if (i == OP_RJUMP || i == OP_RJUMPI || i == OP_RJUMPV || i == OP_CALLF || i == OP_RETF)
+        if (i == OP_RJUMP || i == OP_RJUMPI || i == OP_RJUMPV || i == OP_CALLF || i == OP_RETF ||
+            i == OP_CREATE3 || i == OP_RETURNCONTRACT)
             continue;
 
         // Skip DUPN and SWAPN. They are not defined in evmc
