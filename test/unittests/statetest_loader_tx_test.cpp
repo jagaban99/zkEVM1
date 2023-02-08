@@ -78,3 +78,29 @@ TEST(statetest_loader, tx_access_list)
     EXPECT_EQ(tx.access_list[1].first, 0xac02_address);
     EXPECT_EQ(tx.access_list[1].second, (std::vector{0xfe_bytes32, 0x00_bytes32}));
 }
+
+TEST(statetest_loader, multi_tx_base)
+{
+    constexpr std::string_view input = R"({
+        "sender" : "0xaa01",
+        "to" : "0xaa02",
+        "gasPrice" : "0x0a",
+
+        "accessLists" : [],
+        "data" : ["dd"],
+        "gasLimit" : ["0x01"],
+        "value" : ["0x02"]
+    })";
+
+    const auto base_tx = test::from_json<state::Transaction>(json::json::parse(input));
+    EXPECT_EQ(base_tx.kind, state::Transaction::Kind::legacy);
+    EXPECT_EQ(base_tx.sender, 0xaa01_address);
+    EXPECT_EQ(base_tx.to, 0xaa02_address);
+    EXPECT_EQ(base_tx.max_gas_price, 0x0a);
+    EXPECT_EQ(base_tx.max_priority_gas_price, 0x0a);
+
+    EXPECT_EQ(base_tx.data.size(), 0);
+    EXPECT_EQ(base_tx.gas_limit, 0);
+    EXPECT_EQ(base_tx.value, 0);
+    EXPECT_TRUE(base_tx.access_list.empty());
+}

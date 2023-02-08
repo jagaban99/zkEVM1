@@ -186,18 +186,15 @@ template <>
 state::Transaction from_json<state::Transaction>(const json::json& j)
 {
     state::Transaction o;
-    o.data = from_json<bytes>(j.at("input"));
-    o.gas_limit = from_json<int64_t>(j.at("gas"));
-    o.value = from_json<intx::uint256>(j.at("value"));
     o.sender = from_json<evmc::address>(j.at("sender"));
 
-    if (!j.at("to").get<std::string>().empty())
-        o.to = from_json<evmc::address>(j.at("to"));
+    if (const auto& to = j.at("to"); !to.get<std::string>().empty())
+        o.to = from_json<evmc::address>(to);
 
-    if (j.contains("gasPrice"))
+    if (const auto gas_price_it = j.find("gasPrice"); gas_price_it != j.end())
     {
         o.kind = state::Transaction::Kind::legacy;
-        o.max_gas_price = from_json<intx::uint256>(j.at("gasPrice"));
+        o.max_gas_price = from_json<intx::uint256>(*gas_price_it);
         o.max_priority_gas_price = o.max_gas_price;
     }
     else
@@ -207,29 +204,31 @@ state::Transaction from_json<state::Transaction>(const json::json& j)
         o.max_priority_gas_price = from_json<intx::uint256>(j.at("maxPriorityFeePerGas"));
     }
 
-    if (j.contains("accessList"))
-        o.access_list = from_json<state::AccessList>(j.at("accessList"));
+    // The following fields are optional or arrays in a TestMultiTransaction:
+
+    if (const auto input_it = j.find("input"); input_it != j.end())
+        o.data = from_json<bytes>(*input_it);
+
+    if (const auto gas_it = j.find("gas"); gas_it != j.end())
+        o.gas_limit = from_json<int64_t>(*gas_it);
+
+    if (const auto value_it = j.find("value"); value_it != j.end() && !value_it->is_array())
+        o.value = from_json<intx::uint256>(*value_it);
+
+    if (const auto ac_it = j.find("accessList"); ac_it != j.end())
+        o.access_list = from_json<state::AccessList>(*ac_it);
 
     return o;
 }
 
 static void from_json(const json::json& j, TestMultiTransaction& o)
 {
-    if (j.contains("gasPrice"))
-    {
-        o.kind = state::Transaction::Kind::legacy;
-        o.max_gas_price = from_json<intx::uint256>(j.at("gasPrice"));
-        o.max_priority_gas_price = o.max_gas_price;
-    }
-    else
-    {
-        o.kind = state::Transaction::Kind::eip1559;
-        o.max_gas_price = from_json<intx::uint256>(j.at("maxFeePerGas"));
-        o.max_priority_gas_price = from_json<intx::uint256>(j.at("maxPriorityFeePerGas"));
-    }
-    o.sender = from_json<evmc::address>(j.at("sender"));
-    if (!j.at("to").get<std::string>().empty())
-        o.to = from_json<evmc::address>(j["to"]);
+    const auto base_tx = from_json<state::Transaction>(j);
+    o.kind = base_tx.kind;
+    o.sender = base_tx.sender;
+    o.to = base_tx.to;
+    o.max_gas_price = base_tx.max_gas_price;
+    o.max_priority_gas_price = base_tx.max_priority_gas_price;
 
     for (const auto& j_data : j.at("data"))
         o.inputs.emplace_back(from_json<bytes>(j_data));
