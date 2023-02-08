@@ -574,3 +574,34 @@ TEST_P(evm, eof_creates_valid_eof_contract_only)
         EXPECT_OUTPUT_INT(0);
     }
 }
+
+TEST_P(evm, eof_create3)
+{
+    if (is_advanced())
+        return;
+
+    rev = EVMC_CANCUN;
+    auto deploy_container = eof1_bytecode(bytecode(OP_INVALID), 0);
+
+    auto init_code = calldataload(0) + 10 + 0 + OP_RETURNCONTRACT;
+    auto init_container = eof1_bytecode(init_code, 2, {}, deploy_container);
+
+    auto create_code = bytecode(0xff) + bytecode(10) + 0 + 0 + OP_CREATE3 + Opcode{0} + ret_top();
+    auto container = eof1_bytecode(create_code, 4, {}, init_container);
+
+    host.call_result.output_data = deploy_container.data();
+    host.call_result.output_size = deploy_container.size();
+    host.call_result.create_address = 0xcc010203040506070809010203040506070809ce_address;
+
+    execute(container);
+    EXPECT_STATUS(EVMC_SUCCESS);
+
+    ASSERT_EQ(host.recorded_calls.size(), 1);
+    const auto& call_msg = host.recorded_calls.back();
+
+    EXPECT_EQ(call_msg.input_size, 10);
+
+    ASSERT_EQ(result.output_size, 32);
+    EXPECT_EQ(output, "000000000000000000000000cc010203040506070809010203040506070809ce"_hex);
+
+}
