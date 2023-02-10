@@ -156,6 +156,10 @@ std::variant<TransactionReceipt, std::error_code> transition(
         for (const auto& key : storage_keys)
             storage[key].access_status = EVMC_ACCESS_WARM;
     }
+    // EIP-3651: Warm COINBASE.
+    // We cannot touch it here because it may create an account in pre Spurious Dragon.
+    if (rev >= EVMC_SHANGHAI)
+        host.access_account(block.coinbase);
 
     const auto result = host.call(build_message(tx, execution_gas_limit));
 
