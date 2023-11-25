@@ -8,7 +8,7 @@
 #include "vm.hpp"
 #include "advanced_execution.hpp"
 #include "baseline.hpp"
-#include <evmone/evmone.h>
+#include "evmone/evmone.h"
 #include <cassert>
 #include <iostream>
 

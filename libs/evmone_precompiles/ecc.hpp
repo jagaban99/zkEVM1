@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 
-#include <evmmax/evmmax.hpp>
+#include "evmmax/evmmax.hpp"
 
 namespace evmmax::ecc
 {

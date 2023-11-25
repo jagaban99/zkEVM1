@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 
+#include "evmc/evmc.h"
 #include "tracing.hpp"
-#include <evmc/evmc.h>
 
 #if defined(_MSC_VER) && !defined(__clang__)
 #define EVMONE_CGOTO_SUPPORTED 0

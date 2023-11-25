@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 
+#include "evmc/evmc.hpp"
+#include "evmc/utils.h"
 #include "execution_state.hpp"
 #include "instructions_opcodes.hpp"
-#include <evmc/evmc.hpp>
-#include <evmc/utils.h>
 #include <intx/intx.hpp>
 #include <array>
 #include <cstdint>

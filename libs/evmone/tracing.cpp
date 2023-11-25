@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "tracing.hpp"
+#include "evmc/hex.hpp"
 #include "execution_state.hpp"
 #include "instructions_traits.hpp"
-#include <evmc/hex.hpp>
 #include <stack>
 
 namespace evmone

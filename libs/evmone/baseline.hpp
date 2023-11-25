@@ -4,8 +4,8 @@
 #pragma once
 
 #include "eof.hpp"
-#include <evmc/evmc.h>
-#include <evmc/utils.h>
+#include "evmc/evmc.h"
+#include "evmc/utils.h"
 #include <memory>
 #include <string_view>
 #include <vector>

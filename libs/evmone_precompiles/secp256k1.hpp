@@ -4,8 +4,8 @@
 #pragma once
 
 #include "ecc.hpp"
+#include "evmc/evmc.hpp"
 #include <ethash/hash_types.hpp>
-#include <evmc/evmc.hpp>
 #include <optional>
 
 namespace evmmax::secp256k1
