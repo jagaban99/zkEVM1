@@ -144,6 +144,12 @@ PrecompileAnalysis expmod_analyze(bytes_view input, evmc_revision rev) noexcept
         static_cast<size_t>(mod_len)};
 }
 
+PrecompileAnalysis point_evaluation_analyze(bytes_view, evmc_revision) noexcept
+{
+    static constexpr auto POINT_EVALUATION_PRECOMPILE_GAS = 50000;
+    return {POINT_EVALUATION_PRECOMPILE_GAS, 64};
+}
+
 ExecutionResult ecrecover_execute(const uint8_t* input, size_t input_size, uint8_t* output,
     [[maybe_unused]] size_t output_size) noexcept
 {
@@ -263,6 +269,7 @@ inline constexpr auto traits = []() noexcept {
         {ecmul_analyze, ecmul_execute},
         {ecpairing_analyze, dummy_execute<PrecompileId::ecpairing>},
         {blake2bf_analyze, dummy_execute<PrecompileId::blake2bf>},
+        {point_evaluation_analyze, dummy_execute<PrecompileId::point_evaluation>},
     }};
 #ifdef EVMONE_PRECOMPILES_SILKPRE
     // tbl[static_cast<size_t>(PrecompileId::ecrecover)].execute = silkpre_ecrecover_execute;
@@ -278,25 +285,34 @@ inline constexpr auto traits = []() noexcept {
 }();
 }  // namespace
 
-std::optional<evmc::Result> call_precompile(evmc_revision rev, const evmc_message& msg) noexcept
+bool is_precompile(evmc_revision rev, const evmc::address& addr) noexcept
 {
     // Define compile-time constant,
-    // TODO: workaround for Clang Analyzer bug https://github.com/llvm/llvm-project/issues/59493.
-    static constexpr evmc::address address_boundary{NumPrecompiles};
+    // TODO(clang18): workaround for Clang Analyzer bug, fixed in clang 18.
+    //                https://github.com/llvm/llvm-project/issues/59493.
+    static constexpr evmc::address address_boundary{stdx::to_underlying(PrecompileId::latest)};
 
-    if (evmc::is_zero(msg.code_address) || msg.code_address >= address_boundary)
-        return {};
+    if (evmc::is_zero(addr) || addr > address_boundary)
+        return false;
 
-    const auto id = msg.code_address.bytes[19];
-    if (rev < EVMC_BYZANTIUM && id > 4)
-        return {};
+    const auto id = addr.bytes[19];
+    if (rev < EVMC_BYZANTIUM && id >= stdx::to_underlying(PrecompileId::since_byzantium))
+        return false;
 
-    if (rev < EVMC_ISTANBUL && id > 8)
-        return {};
+    if (rev < EVMC_ISTANBUL && id >= stdx::to_underlying(PrecompileId::since_istanbul))
+        return false;
 
-    assert(id > 0);
+    if (rev < EVMC_CANCUN && id >= stdx::to_underlying(PrecompileId::since_cancun))
+        return false;
+
+    return true;
+}
+
+evmc::Result call_precompile(evmc_revision rev, const evmc_message& msg) noexcept
+{
     assert(msg.gas >= 0);
 
+    const auto id = msg.code_address.bytes[19];
     const auto [analyze, execute] = traits[id];
 
     const bytes_view input{msg.input_data, msg.input_size};
@@ -307,7 +323,7 @@ std::optional<evmc::Result> call_precompile(evmc_revision rev, const evmc_messag
 
     static Cache cache;
     if (auto r = cache.find(static_cast<PrecompileId>(id), input, gas_left); r.has_value())
-        return r;
+        return std::move(*r);
 
     // Buffer for the precompile's output.
     // Big enough to handle all "expmod" tests, but in case does not match the size requirement
