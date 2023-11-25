@@ -7,3 +7,9 @@
 [submodule "libs/crypto3"]
 	path = libs/crypto3
 	url = ../../NilFoundation/crypto3.git
+[submodule "libs/ethash"]
+	path = libs/ethash
+	url = https://github.com/chfast/ethash.git
+[submodule "libs/intx"]
+	path = libs/intx
+	url = https://github.com/chfast/intx.git
