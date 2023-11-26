@@ -2,8 +2,8 @@
 // Copyright 2020 The evmone Authors.
 // SPDX-License-Identifier: Apache-2.0
 
-#include "baseline_instruction_table.hpp"
-#include "instructions_traits.hpp"
+#include "evmone/baseline_instruction_table.hpp"
+#include "evmone/instructions_traits.hpp"
 
 namespace evmone::baseline
 {

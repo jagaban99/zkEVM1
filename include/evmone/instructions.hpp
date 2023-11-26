@@ -11,7 +11,7 @@
 #ifdef __ZKLLVM__
 #include <nil/crypto3/hash/keccak.hpp>
 #else
-#include <ethash/keccak.hpp>
+#include "ethash/keccak.hpp"
 #endif
 
 namespace evmone

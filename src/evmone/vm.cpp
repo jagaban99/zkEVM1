@@ -5,9 +5,9 @@
 /// @file
 /// EVMC instance (class VM) and entry point of evmone is defined here.
 
-#include "vm.hpp"
-#include "advanced_execution.hpp"
-#include "baseline.hpp"
+#include "evmone/vm.hpp"
+#include "evmone/advanced_execution.hpp"
+#include "evmone/baseline.hpp"
 #include "evmone/evmone.h"
 #include <cassert>
 #include <iostream>

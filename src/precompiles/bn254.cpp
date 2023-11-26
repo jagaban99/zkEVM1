@@ -2,7 +2,7 @@
 // Copyright 2023 The evmone Authors.
 // SPDX-License-Identifier: Apache-2.0
 
-#include "bn254.hpp"
+#include "evmone/precompiles/bn254.hpp"
 
 namespace evmmax::bn254
 {

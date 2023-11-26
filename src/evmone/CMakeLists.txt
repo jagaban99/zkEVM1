@@ -5,30 +5,17 @@
 include(LibraryTools)
 
 add_library(evmone
-    ${include_dir}/evmone/evmone.h
         advanced_analysis.cpp
-        advanced_analysis.hpp
         advanced_execution.cpp
-        advanced_execution.hpp
         advanced_instructions.cpp
         baseline.cpp
-        baseline.hpp
         baseline_instruction_table.cpp
-        baseline_instruction_table.hpp
         eof.cpp
-        eof.hpp
-        instructions.hpp
         instructions_calls.cpp
-        instructions_opcodes.hpp
         instructions_storage.cpp
-        instructions_traits.hpp
-        instructions_xmacro.hpp
-        opcodes_helpers.h
         tracing.cpp
-        tracing.hpp
-        vm.cpp
-        vm.hpp
-)
+        vm.cpp)
+
 target_compile_features(evmone PUBLIC cxx_std_20)
 target_link_libraries(evmone PUBLIC evmc::evmc intx::intx PRIVATE ethash::keccak)
 target_include_directories(evmone PUBLIC

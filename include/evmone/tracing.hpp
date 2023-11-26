@@ -5,7 +5,7 @@
 
 #include "evmc/evmc.h"
 #include "evmc/utils.h"
-#include <intx/intx.hpp>
+#include "intx/intx.hpp"
 #include <memory>
 #include <ostream>
 #include <string_view>

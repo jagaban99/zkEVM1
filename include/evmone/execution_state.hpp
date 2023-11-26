@@ -4,7 +4,7 @@
 #pragma once
 
 #include "evmc/evmc.hpp"
-#include <intx/intx.hpp>
+#include "intx/intx.hpp"
 #include <string>
 #include <vector>
 

@@ -2,11 +2,11 @@
 // Copyright 2021 The evmone Authors.
 // SPDX-License-Identifier: Apache-2.0
 
-#include "eof.hpp"
-#include "baseline_instruction_table.hpp"
-#include "instructions_traits.hpp"
+#include "evmone/eof.hpp"
+#include "evmone/baseline_instruction_table.hpp"
+#include "evmone/instructions_traits.hpp"
 
-#include <intx/intx.hpp>
+#include "intx/intx.hpp"
 #include <algorithm>
 #include <array>
 #include <cassert>

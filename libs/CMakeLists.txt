@@ -5,6 +5,3 @@
 add_subdirectory(intx)
 add_subdirectory(crypto3)
 add_subdirectory(ethash)
-add_subdirectory(evmmax)
-add_subdirectory(evmone)
-add_subdirectory(evmone_precompiles)

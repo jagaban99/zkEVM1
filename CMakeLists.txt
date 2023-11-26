@@ -116,6 +116,7 @@ endif()
 set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_subdirectory(libs)
+add_subdirectory(src)
 
 if(EVMONE_TESTING)
     enable_testing()

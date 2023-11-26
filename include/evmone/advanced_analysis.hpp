@@ -7,7 +7,7 @@
 #include "evmc/utils.h"
 #include "execution_state.hpp"
 #include "instructions_opcodes.hpp"
-#include <intx/intx.hpp>
+#include "intx/intx.hpp"
 #include <array>
 #include <cstdint>
 #include <vector>

@@ -2,8 +2,8 @@
 // Copyright 2019 The evmone Authors.
 // SPDX-License-Identifier: Apache-2.0
 
-#include "eof.hpp"
-#include "instructions.hpp"
+#include "evmone/eof.hpp"
+#include "evmone/instructions.hpp"
 
 namespace evmone::instr::core
 {
